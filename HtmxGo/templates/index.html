@@ -4,12 +4,38 @@
     <title></title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="/static/css/global.css" rel="stylesheet" />
-    <script src="/static/lib/htmx.min.js"></script>
+    <link href="/public/css/global.css" rel="stylesheet" />
+    <script src="/public/lib/htmx.min.js"></script>
+    <style>
+      .htmxTest {
+        transition: all 1s ease-in-out;
+      }
+      .htmxTest.htmx-swapping {
+        opacity: 0;
+      }
+
+      .htmxTest.htmx-added {
+        opacity: 1;
+      }
+    </style>
   </head>
   <body>
     <h1>Hello there, this site is maybe using HTXM</h1>
     <p>And this is a super awesome paragraph</p>
-    <p>{{ .test }}</p>
+    <p id="replaceTarget" class="htmxTest">{{ .Name }}</p>
+    <div>
+      <button
+        hx-get="/api/htmx"
+        hx-target="#replaceTarget"
+        hx-swap="outerHTML swap:1s settle:1s"
+        hx-indicator="#loading"
+      >
+        Press me!
+      </button>
+    </div>
+    <div hx-boost="true">
+      <a href="/api/htmx" hx-indicator="#loading">Boost instead of swap!</a>
+    </div>
+    <div class="htmx-indicator" id="loading">Loading...</div>
   </body>
 </html>

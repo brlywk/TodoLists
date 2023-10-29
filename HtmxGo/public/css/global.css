@@ -17,3 +17,13 @@ body {
 h1 {
   color: cornflowerblue;
 }
+
+#replaceTarget.htmx-swapping {
+  opacity: 0;
+  transition: all 0.5s ease-out;
+}
+
+.htmxTest.htmx-added {
+  opacity: 1;
+  transition: all 0.5s ease-out;
+}
