@@ -20,9 +20,25 @@ func getEnv(key string, fallback string) string {
 	return value
 }
 
+// Really need getting used to defer and all of that...
+func measure(name string, method string) func() {
+	start := time.Now()
+
+	if method == "" {
+		method = "GET"
+	}
+
+	return func() {
+		log.Printf("\tPath: %s\t\tMethod: %s\tTime: %v", name, method, time.Since(start))
+	}
+}
+
 // ---- simple template rendering -------------------------
 // This function really handles all routes possible
 func getRoot(w http.ResponseWriter, r *http.Request) {
+	// NOTE: Super important to actually CALL the function 'measure' returns...
+	defer measure(r.URL.Path, r.Method)()
+
 	path := r.URL.Path
 
 	pathMapping := map[string]string{
@@ -64,6 +80,8 @@ type TestResponse struct {
 }
 
 func getTest(w http.ResponseWriter, r *http.Request) {
+	defer measure(r.URL.Path, r.Method)()
+
 	w.Header().Set("Content-Type", "application/json")
 	Data := TestResponse{
 		Name:   "Test JSON Response",
@@ -74,7 +92,10 @@ func getTest(w http.ResponseWriter, r *http.Request) {
 
 // Test handler to get partial HTML template
 func getHtmlTest(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodGet {
+	// Just out of curiosity and for logging and such
+	defer measure(r.URL.Path, r.Method)()
+
+	if r.Method != http.MethodGet {
 		return
 	}
 
