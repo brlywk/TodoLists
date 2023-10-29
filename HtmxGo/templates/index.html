@@ -18,7 +18,7 @@
         opacity: 1;
       }
 
-      .htmx-indicator {
+      .inline-indicator {
         display: none;
       }
 
@@ -26,7 +26,7 @@
         display: none;
       }
 
-      .htmx-request > .htmx-indicator {
+      .htmx-request > .inline-indicator {
         display: block;
       }
     </style>
@@ -42,7 +42,7 @@
         hx-swap="outerHTML swap:1s settle:1s"
       >
         <div class="default-text">Press me!</div>
-        <div class="htmx-indicator">Loading...</div>
+        <div class="inline-indicator">Loading...</div>
       </button>
     </div>
     <div hx-boost="true">
