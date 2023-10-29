@@ -17,6 +17,18 @@
       .htmxTest.htmx-added {
         opacity: 1;
       }
+
+      .htmx-indicator {
+        display: none;
+      }
+
+      .htmx-request > .default-text {
+        display: none;
+      }
+
+      .htmx-request > .htmx-indicator {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -28,14 +40,14 @@
         hx-get="/api/htmx"
         hx-target="#replaceTarget"
         hx-swap="outerHTML swap:1s settle:1s"
-        hx-indicator="#loading"
       >
-        Press me!
+        <div class="default-text">Press me!</div>
+        <div class="htmx-indicator">Loading...</div>
       </button>
     </div>
     <div hx-boost="true">
       <a href="/api/htmx" hx-indicator="#loading">Boost instead of swap!</a>
     </div>
-    <div class="htmx-indicator" id="loading">Loading...</div>
+    <div class="htmx-indicator" id="loading">Get ready to boost...</div>
   </body>
 </html>
