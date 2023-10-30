@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+// Delete todo and return success or error
 func DeleteTodoById(db *sql.DB, id int, userId string) (bool, error) {
 	if userId == "" {
 		return false, fmt.Errorf("UserId cannot be empty.")

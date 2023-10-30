@@ -56,6 +56,18 @@ func main() {
 	// 	log.Printf("Successfully deleted")
 	// }
 
+	// tmpTodo := data.Todo{
+	// 	Id:          3,
+	// 	Name:        "New Name",
+	// 	Description: "New Description",
+	// 	Active:      false,
+	// 	UserId:      "void",
+	// }
+	// success, err := data.UpdateTodo(db, tmpTodo)
+	// if success {
+	// 	log.Printf("Todo with id %v updated", tmpTodo.Id)
+	// }
+
 	// new server
 	mux := http.NewServeMux()
 
