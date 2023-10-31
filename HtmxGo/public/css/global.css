@@ -105,9 +105,19 @@
   --ctp-crust-hsl: hsl(220, 21%, 89%);
   --ctp-crust-raw: 220, 224, 232;
 
+  /* Cannot come up with a good name for this category */
+  --border-color: var(--ctp-overlay0);
+  --box-shadow: 0 0.5rem 2rem -0.75rem var(--ctp-text);
+  --text-shadow: 0 0.5rem 2rem var(--ctp-overlay0);
+  --active-color: var(--ctp-sapphire);
+
   /* Typography */
   --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -129,20 +139,21 @@ body {
 }
 
 .title {
-  color: var(--ctp-lavender);
+  color: var(--ctp-sky);
   text-align: center;
   margin-bottom: 2rem;
+  text-shadow: var(--text-shadow);
 }
 
 .form {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 2rem;
   padding: 2rem;
-  border: 1px solid var(--ctp-overlay0);
+  border: 1px solid var(--border-color);
   border-radius: 1rem;
-  box-shadow: 0 0.5rem 2rem -0.75rem var(--ctp-text);
-  /* background-color: var(--ctp-surface0); */
+  box-shadow: var(--box-shadow);
 }
 
 .form__label {
@@ -152,7 +163,7 @@ body {
 }
 
 .form__input {
-  border: 1px solid var(--ctp-overlay2);
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   padding: 0.5rem;
   font-family: var(--font-family);
@@ -160,14 +171,14 @@ body {
 }
 
 .form__input:focus-visible {
-  outline-color: var(--ctp-sapphire);
+  outline-color: var(--active-color);
 }
 
 .form__submit {
   padding: 1rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--ctp-sapphire);
-  color: var(--ctp-sapphire);
+  border: 1px solid var(--active-color);
+  color: var(--active-color);
   background-color: var(--ctp-base);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -175,7 +186,7 @@ body {
 
 .form__submit:hover {
   color: var(--ctp-base);
-  background-color: var(--ctp-sapphire);
+  background-color: var(--active-color);
 }
 
 .footer {
@@ -192,4 +203,26 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  margin-top: 2rem;
+}
+
+.todo-item {
+  width: 100%;
+  padding: 2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.todo-item__title {
+  flex-grow: 1;
+  font-size: 1.25rem;
+}
+
+.todo-item--inactive {
+  color: var(--ctp-subtext0);
+  text-decoration: line-through;
 }

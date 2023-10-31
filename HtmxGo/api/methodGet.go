@@ -3,7 +3,6 @@ package api
 import (
 	"log"
 	"strconv"
-	"strings"
 	"time"
 
 	"html/template"
@@ -20,46 +19,13 @@ import (
 //		/api/todos/:user/:id
 func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	defer utils.Measure(r.URL.Path, r.Method)()
-	log.Print("\t---- GET Request ----")
 
-	// NOTE:
-	//  We have to handle the following routes
-	//  /api/todos               Nothing for GET
-	//  /api/todos/:userId       Get all Todos for userId
-	//  /api/todos/:userId/:id   Get todo with id for userId
+	// TODO: Delay added for testing
+	time.Sleep(2 * time.Second)
 
-	path := r.URL.Path
-
-	_, action, found := strings.Cut(path, "todos")
-	if !found {
-		WriteErrorResponse(w, http.StatusInternalServerError, "Unexpected error tokenizing request URL.")
-		return
-	}
-
-	// remove leading and trailing / for further processing
-	action, _ = strings.CutPrefix(action, "/")
-	action, _ = strings.CutSuffix(action, "/")
-
-	splitAction := strings.Split(action, "/")
-	userId := splitAction[0]
-	todoId := -1
-
-	// we don't care about any index > 1
-	if len(splitAction) > 1 {
-		var err error
-		todoId, err = strconv.Atoi(splitAction[1])
-		if err != nil {
-			// supremely disappointing that Go overwrites an int with the 'default'
-			// it the conversion fails... makes absolute sense, but super inconvenient right now!
-			todoId = -1
-		}
-	}
-
-	// nothing to do on 'top level' requests
-	if action == "" {
-		WriteErrorResponse(w, http.StatusNotFound, "This endpoint provides no functionality.")
-		return
-	}
+	// Extract necessary info from query string
+	userId := r.URL.Query().Get("userId")
+	todoIdStr := r.URL.Query().Get("todoId")
 
 	// Restrict templates to api subfolder
 	apiFS, err := getApiFS()
@@ -78,7 +44,7 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 1 param  -> get all for user
-	if userId != "" && todoId == -1 {
+	if userId != "" && todoIdStr == "" {
 		userTodos, err := data.GetAllTodosForUser(data.DB, userId)
 		if err != nil {
 			WriteErrorResponse(w, http.StatusInternalServerError, "Unable to get todos for user")
@@ -90,7 +56,9 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2 params -> get id for user
-	if userId != "" && todoId > -1 {
+	if userId != "" && todoIdStr != "" {
+		todoId, _ := strconv.Atoi(todoIdStr)
+
 		userTodo, err := data.GetSingleTodoByUserId(data.DB, todoId, userId)
 		if err != nil {
 			WriteErrorResponse(w, http.StatusInternalServerError, "Unable to get todo for user")
@@ -102,27 +70,11 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Test handler to get partial HTML template
-func GetHtmlTest(w http.ResponseWriter, r *http.Request) {
-	// Just out of curiosity and for logging and such
+// Returns edit form for the specified todo item
+func GetTodoEditForm(w http.ResponseWriter, r *http.Request) {
 	defer utils.Measure(r.URL.Path, r.Method)()
 
-	if r.Method != http.MethodGet {
-		return
-	}
-
-	// To play around with HTMX loading a bit...
-	time.Sleep(2 * time.Second)
-
-	html, err := template.ParseFiles("templates/api/htmxTest.html")
-
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Template not found! OH NOES!"))
-		return
-	}
-
-	html.Execute(w, "This has been added by the API function")
+	log.Printf("GetTodoEditForm called with %v", r.URL.RawQuery)
 }
 
 // // Just a simple test handler that returns a JSON object

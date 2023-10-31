@@ -23,16 +23,22 @@
     <div class="container">
       {{ template "htmlHeader" . }}
       <main class="w--half">
-        {{ template "newTodoForm"}}
+        {{ template "newTodoForm" }}
         <div
-          id="todo-list"
-          hx-get="/api/todos/void"
+          hx-get="/api/todos"
           hx-trigger="load"
+          hx-vals='{"userId": "void"}'
           hx-swap="outerHTML"
-        ></div>
+          hx-indicator="#todos-loading"
+        >
+          <div id="todos-loading" class="htmx-indicator">Loading...</div>
+        </div>
       </main>
       {{ template "htmlFooter" . }}
     </div>
   </body>
 </html>
 {{ end }}
+
+<!-- For easier 'error handling:' -->
+<!-- https://htmx.org/extensions/response-targets/ -->

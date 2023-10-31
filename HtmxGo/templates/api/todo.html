@@ -1,8 +1,16 @@
 {{ define "todoItem" }}
-<article>
-  <p>{{- .Name -}}</p>
-  <p>{{- .Description -}}</p>
-  <p>{{- .Active -}}</p>
-  <p>{{- .Id -}}</p>
+<article class="todo-item">
+  <button hx-put="/api/toggle?userId={{- .UserId -}}&id={{- .Id -}}">
+    Toggle
+  </button>
+  <div
+    class="todo-item__title {{ if not .Active -}}todo-item--inactive{{- end -}}"
+  >
+    {{- .Name -}}
+  </div>
+  <button hx-get="/api/edit?userId={{- .UserId -}}&id={{- .Id -}}">Edit</button>
+  <button hx-delete="/api/delete?userId={{- .UserId -}}&id={{- .Id -}}">
+    Delete
+  </button>
 </article>
 {{ end }}

@@ -33,12 +33,13 @@ func main() {
 	fs := http.FileServer(http.Dir("./public/"))
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))
 
-
 	// api handlers
-	// NOTE: Go requires both of these routes in order to handle the route itself and
-	// all subroutes of it...
-	mux.HandleFunc("/api/todos", api.TodosRouter)
-	mux.HandleFunc("/api/todos/", api.TodosRouter)
+	mux.HandleFunc("/api/todos", api.GetApiTodos)
+	mux.HandleFunc("/api/create", api.PostTodo)
+	mux.HandleFunc("/api/toggle", api.PutToggleTodo)
+	mux.HandleFunc("/api/edit", api.GetTodoEditForm)
+	mux.HandleFunc("/api/saveEdit", api.PutEditTodo)
+	mux.HandleFunc("/api/delete", api.DeleteTodo)
 
 	// serve root files which basically is only the index.html
 	mux.HandleFunc("/", server.GetRoot)
