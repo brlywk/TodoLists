@@ -1,6 +1,12 @@
 package data
 
-import "fmt"
+import (
+	"database/sql"
+	"fmt"
+)
+
+// Global reference to Database objects
+var DB *sql.DB
 
 // Struct representing a single todo item
 type Todo struct {

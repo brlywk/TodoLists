@@ -19,54 +19,12 @@ func main() {
 	port := fmt.Sprintf(":%s", utils.GetEnv("PORT", "3000"))
 
 	// prepare sqlite connection
-	db, err := sql.Open("sqlite3", "./db/todo.sqlite3")
+	var err error
+	data.DB, err = sql.Open("sqlite3", "./db/todo.sqlite3")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
-
-	// todo, err := data.GetSingleTodoByUserId(db, 1, "void")
-	// if err != nil {
-	// 	// Best way to handle errors for queries is check whether any rows have been returned
-	// 	// at all
-	// 	if err == sql.ErrNoRows {
-	// 		log.Println("No rows returned :(")
-	// 	} else {
-	// 		log.Fatal(err)
-	// 	}
-	// }
-	// log.Printf("\tTodo found:\t%v", todo)
-
-	// Test insertion
-	// success, err := data.CreateNewTodo(db, "Test Insertion", "", true)
-	// if success {
-	// 	log.Printf("Successfully created new Todo")
-	// }
-
-	// Get all rows
-	// todos, err := data.GetAllTodosForUser(db, "void")
-	// if err != nil {
-	// 	log.Printf("Error: %v", err)
-	// } else {
-	// 	log.Printf("Todos: %v", todos)
-	// }
-
-	// success, err := data.DeleteTodoById(db, 4, "void")
-	// if success {
-	// 	log.Printf("Successfully deleted")
-	// }
-
-	// tmpTodo := data.Todo{
-	// 	Id:          3,
-	// 	Name:        "New Name",
-	// 	Description: "New Description",
-	// 	Active:      false,
-	// 	UserId:      "void",
-	// }
-	// success, err := data.UpdateTodo(db, tmpTodo)
-	// if success {
-	// 	log.Printf("Todo with id %v updated", tmpTodo.Id)
-	// }
+	defer data.DB.Close()
 
 	// new server
 	mux := http.NewServeMux()
@@ -75,12 +33,15 @@ func main() {
 	fs := http.FileServer(http.Dir("./public/"))
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))
 
-	// serve root files which basically is only the index.html
-	mux.HandleFunc("/", server.GetRoot)
 
 	// api handlers
-	mux.HandleFunc("/api/test", api.GetTest)
-	mux.HandleFunc("/api/htmx", api.GetHtmlTest)
+	// NOTE: Go requires both of these routes in order to handle the route itself and
+	// all subroutes of it...
+	mux.HandleFunc("/api/todos", api.TodosRouter)
+	mux.HandleFunc("/api/todos/", api.TodosRouter)
+
+	// serve root files which basically is only the index.html
+	mux.HandleFunc("/", server.GetRoot)
 
 	// run server
 	err = http.ListenAndServe(port, mux)

@@ -1,0 +1,13 @@
+{{ define "newTodoForm" }}
+<form hx-post="/api/create" class="form">
+  <label class="form__label">
+    Title
+    <input type="text" class="form__input" required />
+  </label>
+  <label class="form__label">
+    Description
+    <textarea rows="2" cols="40" class="form__input"></textarea>
+  </label>
+  <button class="form__submit w--half">Submit</button>
+</form>
+{{ end }}

@@ -1,47 +1,47 @@
 package server
 
 import (
-	"brlywk/HtmxGo/utils"
 	"fmt"
+	"log"
+	"strings"
+
 	"html/template"
 	"net/http"
+
+	"brlywk/HtmxGo/templates"
+	"brlywk/HtmxGo/utils"
 )
 
-// This function really handles all routes possible
+// This function really handles all (non API) routes possible
 func GetRoot(w http.ResponseWriter, r *http.Request) {
-	// NOTE: Super important to actually CALL the function 'measure' returns...
 	defer utils.Measure(r.URL.Path, r.Method)()
 
 	path := r.URL.Path
 
-	pathMapping := map[string]string{
-		"/":     "index.html",
-		"/test": "test.html",
-	}
-
-	templateFile, exists := pathMapping[path]
-
-	if !exists {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Page not found."))
+	// We don't want to handle any /api routes here
+	if strings.Contains(path, "/api") {
+		log.Print("\tAPI route detected, skipping")
 		return
 	}
 
-	templatePath := fmt.Sprintf("templates/%s", templateFile)
+	// TODO: Also just for debug...
+	if strings.Contains(path, "favicon") {
+		log.Print("\tNo one likes favicons!")
+		return
+	}
 
-	html, err := template.ParseFiles(templatePath)
+	// Parse all templates from our embeded FS
+	templ, err := template.ParseFS(&templates.Files, "*.html", "partials/*.html")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Unable to parse template files"))
+		return
+	}
 
+	err = templ.ExecuteTemplate(w, "htmlBase", pageData)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("File not found: %s", templateFile)))
+		w.Write([]byte(fmt.Sprintf("Template Rendering Error: %v", err)))
 		return
 	}
-
-	Test := struct {
-		Name string
-	}{
-		Name: "Hello there",
-	}
-
-	html.Execute(w, Test)
 }

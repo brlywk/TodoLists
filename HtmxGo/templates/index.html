@@ -1,55 +1,38 @@
+{{ define "htmlBase" }}
 <!doctype html>
+{{ template "htmlHead" .Title }}
 <html lang="en">
-  <head>
-    <title></title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="/public/css/global.css" rel="stylesheet" />
-    <script src="/public/lib/htmx.min.js"></script>
-    <style>
-      .htmxTest {
-        transition: all 1s ease-in-out;
-      }
-      .htmxTest.htmx-swapping {
-        opacity: 0;
-      }
-
-      .htmxTest.htmx-added {
-        opacity: 1;
-      }
-
-      .inline-indicator {
-        display: none;
-      }
-
-      .htmx-request > .default-text {
-        display: none;
-      }
-
-      .htmx-request > .inline-indicator {
-        display: block;
-      }
-
-      /* TODO: Check if this can be moved to the external CSS if rel=preload as=style is used */
-    </style>
-  </head>
   <body>
-    <h1>Hello there, this site is maybe using HTXM</h1>
-    <p>And this is a super awesome paragraph</p>
-    <p id="replaceTarget" class="htmxTest">{{ .Name }}</p>
-    <div>
-      <button
-        hx-get="/api/htmx"
-        hx-target="#replaceTarget"
-        hx-swap="outerHTML swap:1s settle:1s"
-      >
-        <div class="default-text">Press me!</div>
-        <div class="inline-indicator">Loading...</div>
-      </button>
+    <!-- <h1>Hello there, this site is maybe using HTXM</h1> -->
+    <!-- <p>And this is a super awesome paragraph</p> -->
+    <!-- <p id="replaceTarget" class="htmxTest">{{ .Title }}</p> -->
+    <!-- <div> -->
+    <!--   <button -->
+    <!--     hx-get="/api/htmx" -->
+    <!--     hx-target="#replaceTarget" -->
+    <!--     hx-swap="outerHTML swap:1s settle:1s" -->
+    <!--   > -->
+    <!--     <div class="default-text">Press me!</div> -->
+    <!--     <div class="inline-indicator">Loading...</div> -->
+    <!--   </button> -->
+    <!-- </div> -->
+    <!-- <div hx-boost="true"> -->
+    <!--   <a href="/api/htmx" hx-indicator="#loading">Boost instead of swap!</a> -->
+    <!-- </div> -->
+    <!-- <div class="htmx-indicator" id="loading">Get ready to boost...</div> -->
+    <div class="container">
+      {{ template "htmlHeader" . }}
+      <main class="w--half">
+        {{ template "newTodoForm"}}
+        <div
+          id="todo-list"
+          hx-get="/api/todos/void"
+          hx-trigger="load"
+          hx-swap="outerHTML"
+        ></div>
+      </main>
+      {{ template "htmlFooter" . }}
     </div>
-    <div hx-boost="true">
-      <a href="/api/htmx" hx-indicator="#loading">Boost instead of swap!</a>
-    </div>
-    <div class="htmx-indicator" id="loading">Get ready to boost...</div>
   </body>
 </html>
+{{ end }}
