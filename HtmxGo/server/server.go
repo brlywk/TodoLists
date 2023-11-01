@@ -31,7 +31,7 @@ func GetRoot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse all templates from our embeded FS
-	templ, err := template.ParseFS(&templates.Files, "*.html", "partials/*.html")
+	templ, err := template.ParseFS(&templates.Files, "*.html", "partials/*.html", "api/newTodoForm.html")
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Unable to parse template files"))

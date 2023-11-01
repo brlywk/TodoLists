@@ -8,8 +8,8 @@ import (
 )
 
 // Creates a new Todo. Returns whether the Todo was created (bool) / an error occured
-func CreateNewTodo(db *sql.DB, newName string, newDescription string, newActive bool, forUser string) (bool, error) {
-	stmt, err := db.Prepare("INSERT INTO todos(name, description, active, userId) VALUES ($1, $2, $3, $4)")
+func CreateNewTodo(db *sql.DB, newName string, forUser string) (bool, error) {
+	stmt, err := db.Prepare("INSERT INTO todos(name, userId) VALUES ($1, $2)")
 	if err != nil {
 		log.Printf("\tCreateNewTodo\tPreprate Statement\t%v", err)
 		return false, err
@@ -21,7 +21,7 @@ func CreateNewTodo(db *sql.DB, newName string, newDescription string, newActive 
 		forUser = uuid.NewString() 
 	}
 
-	_, err = stmt.Exec(newName, newDescription, newActive, forUser)
+	_, err = stmt.Exec(newName, forUser)
 	if err != nil {
 		log.Printf("\tCreateNewTodo\tExecute Statement\t%v", err)
 		return false, err

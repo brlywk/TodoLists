@@ -230,6 +230,18 @@ body {
   text-decoration: line-through;
 }
 
+#todos-loading {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.todo-loading--medium {
+  width: 3rem;
+  height: 3rem;
+}
+
 /* ----------- User Edit ----------- */
 .userIdSection {
   display: flex;

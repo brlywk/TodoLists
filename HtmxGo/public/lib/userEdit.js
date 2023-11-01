@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         htmx.ajax(
           "GET",
           `/api/changeUserId?old=${currentUserId}&new=${newUserId}`,
-          "#todo-list",
+          "body",
         );
       }
 
