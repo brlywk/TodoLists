@@ -1,6 +1,7 @@
 package api
 
 import (
+	"html/template"
 	"io/fs"
 	"net/http"
 
@@ -15,6 +16,22 @@ func getApiFS() (fs.FS, error) {
 	}
 
 	return apiFS, nil
+}
+
+// Get the requested API templates
+func GetApiTemplates(files ...string) (*template.Template, error) {
+	// get templates from FS
+	apiFS, err := getApiFS()
+	if err != nil {
+		return nil, err
+	}
+
+	templ, err := template.ParseFS(apiFS, files...)
+	if err != nil {
+		return nil, err
+	}
+
+	return templ, nil
 }
 
 // Simple helper to save some writing on sending an error response
