@@ -1,0 +1,24 @@
+{{ define "userIdDisplay" }}
+<div class="userIdSection">
+  <div id="userIdContainer" class="userIdSection--row shown">
+    <p>
+      <span> Your user ID is: </span>
+      <span id="userIdDisplay" class="userIdSection__id">Loading...</span>
+    </p>
+    <button id="userIdEditButton" class="userIdSection__button">Edit</button>
+  </div>
+  <form id="userIdEditForm" class="userIdSection--row hidden">
+    <input
+      type="text"
+      id="userIdEditField"
+      class="userIdSection__input"
+      placeholder="Enter new user ID here"
+      value=""
+    />
+    <button class="userIdSection__button">Save</button>
+    <button id="userIdCancelButton" class="userIdSection__button">
+      Cancel
+    </button>
+  </form>
+</div>
+{{ end }}

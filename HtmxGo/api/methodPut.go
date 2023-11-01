@@ -19,3 +19,11 @@ func PutEditTodo(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("PutEditTodo called with %v", r.URL.RawQuery)
 }
+
+// This one is only used if a user opts to change their user id and
+// we need to update the old id with the new id
+func PutChangeUserId(w http.ResponseWriter, r *http.Request) {
+	defer utils.Measure(r.URL.Path, r.Method)
+
+	log.Printf("PutChangeUserId called with %v", r.URL.RawQuery)
+}

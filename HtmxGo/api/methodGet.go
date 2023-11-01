@@ -77,6 +77,40 @@ func GetTodoEditForm(w http.ResponseWriter, r *http.Request) {
 	log.Printf("GetTodoEditForm called with %v", r.URL.RawQuery)
 }
 
+// Used to update an existing user id with a new user id and refetch
+// all todos for the updated id. this makes it easier to work
+// with HTXM
+func GetChangeUserId(w http.ResponseWriter, r *http.Request) {
+	defer utils.Measure(r.URL.Path, r.Method)()
+
+	oldUserId := r.URL.Query().Get("old")
+	newUserId := r.URL.Query().Get("new")
+
+	updatedTodos, err := data.UpdateUserId(data.DB, oldUserId, newUserId)
+	if err != nil {
+		WriteErrorResponse(w, http.StatusInternalServerError, "All is lost! There has been an error updating your user ID. This would be a great time to panic!")
+		return
+	}
+
+	// Restrict templates to api subfolder
+	apiFS, err := getApiFS()
+	if err != nil {
+		WriteErrorResponse(w, http.StatusInternalServerError, "Unable to access templates. Please try again.")
+		return
+	}
+
+	// load templates
+	// ... and as everyone knows, hardcoding absolutely rules and has no negative
+	// side-effects whatsoever! /s
+	templ, err := template.ParseFS(apiFS, "todo.html", "todolist.html")
+	if err != nil {
+		WriteErrorResponse(w, http.StatusBadRequest, "Unable to parse template files")
+		return
+	}
+
+	templ.ExecuteTemplate(w, "todoList", updatedTodos)
+}
+
 // // Just a simple test handler that returns a JSON object
 // func GetTest(w http.ResponseWriter, r *http.Request) {
 // 	defer utils.Measure(r.URL.Path, r.Method)()

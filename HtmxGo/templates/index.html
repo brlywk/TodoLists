@@ -3,31 +3,15 @@
 {{ template "htmlHead" .Title }}
 <html lang="en">
   <body>
-    <!-- <h1>Hello there, this site is maybe using HTXM</h1> -->
-    <!-- <p>And this is a super awesome paragraph</p> -->
-    <!-- <p id="replaceTarget" class="htmxTest">{{ .Title }}</p> -->
-    <!-- <div> -->
-    <!--   <button -->
-    <!--     hx-get="/api/htmx" -->
-    <!--     hx-target="#replaceTarget" -->
-    <!--     hx-swap="outerHTML swap:1s settle:1s" -->
-    <!--   > -->
-    <!--     <div class="default-text">Press me!</div> -->
-    <!--     <div class="inline-indicator">Loading...</div> -->
-    <!--   </button> -->
-    <!-- </div> -->
-    <!-- <div hx-boost="true"> -->
-    <!--   <a href="/api/htmx" hx-indicator="#loading">Boost instead of swap!</a> -->
-    <!-- </div> -->
-    <!-- <div class="htmx-indicator" id="loading">Get ready to boost...</div> -->
     <div class="container">
       {{ template "htmlHeader" . }}
       <main class="w--half">
-        {{ template "newTodoForm" }}
+        {{ template "userIdDisplay" }} {{ template "newTodoForm" }}
         <div
+          id="todo-list"
           hx-get="/api/todos"
-          hx-trigger="load"
-          hx-vals='{"userId": "void"}'
+          hx-trigger="triggerLoad"
+          hx-vals='js:{"userId": getOrCreateUserId()}'
           hx-swap="outerHTML"
           hx-indicator="#todos-loading"
         >

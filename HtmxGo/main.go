@@ -40,6 +40,7 @@ func main() {
 	mux.HandleFunc("/api/edit", api.GetTodoEditForm)
 	mux.HandleFunc("/api/saveEdit", api.PutEditTodo)
 	mux.HandleFunc("/api/delete", api.DeleteTodo)
+	mux.HandleFunc("/api/changeUserId", api.GetChangeUserId)
 
 	// serve root files which basically is only the index.html
 	mux.HandleFunc("/", server.GetRoot)
