@@ -3,6 +3,7 @@ package data
 import (
 	"database/sql"
 	"log"
+	"strconv"
 )
 
 // Updates an existing todo. Returns if successful or error
@@ -21,6 +22,54 @@ func UpdateTodo(db *sql.DB, todo Todo) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// Toggles the active state of a Todo with given id and returns the updated
+// todo or an error
+func UpdateToggleTodo(db *sql.DB, id int) (Todo, error) {
+	fail := func(err error, message string) (Todo, error) {
+		log.Printf("\tUpdateToggleTodo\t%v\t%v", message, err)
+		return Todo{}, err
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		return fail(err, "Unable to start transaction")
+	}
+	defer tx.Rollback()
+
+	var (
+		tId         int
+		name        string
+		description string
+		active      bool
+		userId      string
+	)
+
+	row := tx.QueryRow("SELECT * FROM todos WHERE id = ?", id)
+	err = row.Scan(&tId, &name, &description, &active, &userId)
+	if err != nil {
+		return fail(err, "Error while searching Todo with id "+strconv.Itoa(id))
+	}
+
+	tmpTodo := Todo{
+		Id:          id,
+		Name:        name,
+		Description: description,
+		Active:      !active,
+		UserId:      userId,
+	}
+
+	_, err = tx.Exec("UPDATE todos SET active = ? WHERE id = ?", !active, id)
+	if err != nil {
+		return fail(err, "Error toggling active state for Todo with id "+strconv.Itoa(id))
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fail(err, "Unable to commit transaction")
+	}
+
+	return tmpTodo, nil
 }
 
 // Update all entries for an old user id with a new id
@@ -80,8 +129,6 @@ func UpdateUserId(db *sql.DB, oldUserId string, newUserId string) ([]Todo, error
 			UserId:      userId,
 		}
 
-		log.Printf("Todo added: %v", tmpTodo)
-
 		todos = append(todos, tmpTodo)
 	}
 	err = rows.Err()
@@ -93,8 +140,6 @@ func UpdateUserId(db *sql.DB, oldUserId string, newUserId string) ([]Todo, error
 	if err := tx.Commit(); err != nil {
 		return fail(err, "Error committing transaction. It's rollback time!")
 	}
-
-	log.Print("And we're done, exiting transaction")
 
 	// delete
 	return todos, err
