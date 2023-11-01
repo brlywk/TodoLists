@@ -1,8 +1,13 @@
 {{ define "newTodoForm" }}
-<form hx-post="/api/create" class="form">
+<form
+  hx-post="/api/create"
+  hx-vals='js:{"userId": getOrCreateUserId()}'
+  class="form"
+>
   <label class="form__label">
     Title
     <input
+      name="name"
       type="text"
       class="form__input"
       placeholder="Start typing here..."

@@ -11,11 +11,8 @@ import (
 	"brlywk/HtmxGo/utils"
 )
 
-// Route handler
-//
-//	GET
-//		/api/todos/:user
-//		/api/todos/:user/:id
+// Returns either all todos for a user, or a single todo,
+// depending on wheter query parameter 'id' is provided
 func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	defer utils.Measure(r.URL.Path, r.Method)()
 
@@ -43,6 +40,7 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
 		templ.ExecuteTemplate(w, "todoList", userTodos)
 		return
 	}
@@ -57,6 +55,7 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		w.WriteHeader(http.StatusOK)
 		templ.ExecuteTemplate(w, "todoItem", userTodo)
 		return
 	}
@@ -93,17 +92,6 @@ func GetChangeUserId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	templ.ExecuteTemplate(w, "todoList", updatedTodos)
 }
-
-// // Just a simple test handler that returns a JSON object
-// func GetTest(w http.ResponseWriter, r *http.Request) {
-// 	defer utils.Measure(r.URL.Path, r.Method)()
-//
-// 	w.Header().Set("Content-Type", "application/json")
-// 	Data := TestResponse{
-// 		Name:   "Test JSON Response",
-// 		Answer: 42,
-// 	}
-// 	json.NewEncoder(w).Encode(Data)
-// }
