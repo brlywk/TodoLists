@@ -5,16 +5,13 @@
   hx-vals='js:{"userId": getOrCreateUserId()}'
   class="form"
 >
-  <label class="form__label">
-    Title
-    <input
-      name="name"
-      type="text"
-      class="form__input"
-      placeholder="Start typing here..."
-      required
-    />
-  </label>
+  <input
+    name="name"
+    type="text"
+    class="form__input"
+    placeholder="Create a new todo..."
+    required
+  />
   <button class="form__submit w--half">Submit</button>
 </form>
 {{ end }}

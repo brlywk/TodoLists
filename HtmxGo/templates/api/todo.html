@@ -4,6 +4,7 @@
     hx-put="/api/toggle?id={{- .Id -}}"
     hx-swap="outerHTML"
     hx-target="closest article"
+    class="todo-item__togglenator {{ if not .Active -}}todo-item__togglenator--bad{{- else -}}todo-item__togglenator--good{{- end -}}"
   >
     {{ if .Active }}
     <svg
@@ -40,13 +41,17 @@
     hx-get="/api/todo?id={{- .Id -}}&action=edit"
     hx-swap="outerHTML"
     hx-target="closest article"
+    class="button"
   >
     Edit
   </button>
+  <!-- TODO: As a confirmation, we could swap this one out with two buttons that -->
+  <!-- access the actual endpoint below -->
   <button
     hx-delete="/api/delete?userId={{- .UserId -}}&id={{- .Id -}}"
     hx-swap="outerHTML"
     hx-target="closest article"
+    class="button button--bad"
   >
     Delete
   </button>

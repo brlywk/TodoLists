@@ -151,7 +151,6 @@ body {
 .form {
   width: 100%;
   display: flex;
-  flex-direction: column;
   gap: 2rem;
   padding: 2rem;
   border: 1px solid var(--border-color);
@@ -163,6 +162,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  width: 100%;
+  flex-grow: 1;
 }
 
 .form__input {
@@ -292,13 +293,44 @@ body {
 
 /* ----------- Edit Todo Form ----------- */
 .button {
+  --_active: var(--_active-color, var(--active-color));
   border-radius: 0.5rem;
   background-color: transparent;
   border: none;
   padding: 0.5rem;
-  color: var(--active-color);
+  color: var(--_active);
   cursor: pointer;
   transition: var(--transition);
+}
+
+.button:hover {
+  color: var(--ctp-base);
+  background-color: var(--_active, var(--active-color));
+}
+
+.button--good {
+  --_active: var(--ctp-green);
+}
+
+.button--bad {
+  --_active: var(--ctp-red);
+}
+
+.todo-item__togglenator {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.todo-item__togglenator--good:hover {
+  color: var(--ctp-green);
+}
+
+.todo-item__togglenator--bad:hover {
+  color: var(--ctp-red);
 }
 
 /* ----------- General Helpers ----------- */

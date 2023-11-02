@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"log"
 	"strconv"
-	"time"
 
 	"net/http"
 
@@ -16,9 +15,6 @@ import (
 // depending on wheter query parameter 'id' is provided
 func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	defer utils.Measure(r.URL.Path, r.Method)()
-
-	// TODO: Delay added for testing
-	time.Sleep(2 * time.Second)
 
 	// Extract necessary info from query string
 	userId := r.URL.Query().Get("userId")

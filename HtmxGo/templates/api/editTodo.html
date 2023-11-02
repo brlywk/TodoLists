@@ -12,9 +12,9 @@
     autofocus
     required
   />
-  <button>Save</button>
+  <button class="button button--good">Save</button>
   <button
-    class="button"
+    class="button button--bad"
     hx-get="/api/todo?id={{- .Id -}}"
     hx-swap="outerHTML"
     hx-target="closest form"
