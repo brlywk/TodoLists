@@ -1,3 +1,4 @@
+/* TODO: Refactor button styles into .button with modifiers */
 :root {
   /* The bestest color palette ever */
   --ctp-rosewater: #dc8a78;
@@ -287,6 +288,17 @@ body {
 .userIdSection__button:hover {
   color: var(--ctp-base);
   background-color: var(--active-color);
+}
+
+/* ----------- Edit Todo Form ----------- */
+.button {
+  border-radius: 0.5rem;
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  color: var(--active-color);
+  cursor: pointer;
+  transition: var(--transition);
 }
 
 /* ----------- General Helpers ----------- */

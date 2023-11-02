@@ -7,21 +7,50 @@ import (
 )
 
 // Updates an existing todo. Returns if successful or error
-func UpdateTodo(db *sql.DB, todo Todo) (bool, error) {
-	stmt, err := db.Prepare("UPDATE todos SET name = $1, description = $2, active = $3 WHERE id = $4 AND userId = $5")
-	if err != nil {
-		log.Printf("\tUpdateTodo\tPrepare Statement\t%s", err)
-		return false, err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(todo.Name, todo.Description, todo.Active, todo.Id, todo.UserId)
-	if err != nil {
-		log.Printf("\tUpdateTodo\tUpdate Todo\t%s", err)
-		return false, err
+func UpdateTodo(db *sql.DB, todo Todo) (Todo, error) {
+	fail := func(err error, message string) (Todo, error) {
+		log.Printf("\tUpdateToggleTodo\t%v\t%v", message, err)
+		return Todo{}, err
 	}
 
-	return true, nil
+	tx, err := db.Begin()
+	if err != nil {
+		return fail(err, "Unable to start transaction")
+	}
+	defer tx.Rollback()
+
+	_, err = tx.Exec("UPDATE todos SET name = ? WHERE id = ?", todo.Name, id)
+	if err != nil {
+		return fail(err, "Error toggling active state for Todo with id "+strconv.Itoa(id))
+	}
+
+	var (
+		tId         int
+		name        string
+		description string
+		active      bool
+		userId      string
+	)
+
+	row := tx.QueryRow("SELECT * FROM todos WHERE id = ?", todo.Id)
+	err = row.Scan(&tId, &name, &description, &active, &userId)
+	if err != nil {
+		return fail(err, "Error while searching Todo with id "+strconv.Itoa(id))
+	}
+
+	tmpTodo := Todo{
+		Id:          tId,
+		Name:        name,
+		Description: description,
+		Active:      active,
+		UserId:      userId,
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fail(err, "Unable to commit transaction")
+	}
+
+	return tmpTodo, nil
 }
 
 // Toggles the active state of a Todo with given id and returns the updated

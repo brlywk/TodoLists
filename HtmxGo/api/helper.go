@@ -1,8 +1,10 @@
 package api
 
 import (
+	"fmt"
 	"html/template"
 	"io/fs"
+	"log"
 	"net/http"
 
 	"brlywk/HtmxGo/templates"
@@ -35,8 +37,20 @@ func GetApiTemplates(files ...string) (*template.Template, error) {
 }
 
 // Simple helper to save some writing on sending an error response
-func WriteErrorResponse(w http.ResponseWriter, statusCode int, message string) {
+// Currently only accepts errors and strings as message
+func WriteErrorResponse(w http.ResponseWriter, statusCode int, message interface{}) {
+	var msg string
+	switch message.(type) {
+	case error:
+		msg = message.(error).Error()
+	case string:
+		msg = message.(string)
+	default:
+		msg = fmt.Sprintf("Unsupported type %t", message)
+	}
+
+	log.Printf("\tStatus: %v\tMessage: %v", statusCode, msg)
 	w.WriteHeader(statusCode)
-	w.Write([]byte(message))
+	w.Write([]byte(msg))
 	return
 }

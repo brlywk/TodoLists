@@ -1,6 +1,7 @@
 package api
 
 import (
+	"html/template"
 	"log"
 	"strconv"
 	"time"
@@ -28,7 +29,7 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	// side-effects whatsoever! /s
 	templ, err := GetApiTemplates("todo.html", "todolist.html")
 	if err != nil {
-		WriteErrorResponse(w, http.StatusBadRequest, "Unable to parse template files")
+		WriteErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -36,7 +37,7 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	if userId != "" && todoIdStr == "" {
 		userTodos, err := data.GetAllTodosForUser(data.DB, userId)
 		if err != nil {
-			WriteErrorResponse(w, http.StatusInternalServerError, "Unable to get todos for user")
+			WriteErrorResponse(w, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -46,12 +47,13 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 2 params -> get id for user
+	// NOTE: This one changed, so now it does not really need a user ID anymore
 	if userId != "" && todoIdStr != "" {
 		todoId, _ := strconv.Atoi(todoIdStr)
 
-		userTodo, err := data.GetSingleTodoByUserId(data.DB, todoId, userId)
+		userTodo, err := data.GetSingleTodoById(data.DB, todoId)
 		if err != nil {
-			WriteErrorResponse(w, http.StatusInternalServerError, "Unable to get todo for user")
+			WriteErrorResponse(w, http.StatusInternalServerError, err)
 			return
 		}
 
@@ -59,13 +61,6 @@ func GetApiTodos(w http.ResponseWriter, r *http.Request) {
 		templ.ExecuteTemplate(w, "todoItem", userTodo)
 		return
 	}
-}
-
-// Returns edit form for the specified todo item
-func GetTodoEditForm(w http.ResponseWriter, r *http.Request) {
-	defer utils.Measure(r.URL.Path, r.Method)()
-
-	log.Printf("GetTodoEditForm called with %v", r.URL.RawQuery)
 }
 
 // Used to update an existing user id with a new user id and refetch
@@ -79,7 +74,7 @@ func GetChangeUserId(w http.ResponseWriter, r *http.Request) {
 
 	updatedTodos, err := data.UpdateUserId(data.DB, oldUserId, newUserId)
 	if err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, "All is lost! There has been an error updating your user ID. This would be a great time to panic!")
+		WriteErrorResponse(w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -88,10 +83,92 @@ func GetChangeUserId(w http.ResponseWriter, r *http.Request) {
 	// side-effects whatsoever! /s
 	templ, err := GetApiTemplates("todo.html", "todolist.html")
 	if err != nil {
-		WriteErrorResponse(w, http.StatusBadRequest, "Unable to parse template files")
+		WriteErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	templ.ExecuteTemplate(w, "todoList", updatedTodos)
+}
+
+// Return single todo item
+// If action = present is in query send form, otherwise rendered todo
+func GetTodoById(w http.ResponseWriter, r *http.Request) {
+
+	defer utils.Measure(r.URL.Path, r.Method)()
+
+	rawTodoId := r.URL.Query().Get("id")
+	action := r.URL.Query().Get("action")
+
+	log.Printf("ID: %v, Action: %v", rawTodoId, action)
+
+	todoId, err := strconv.Atoi(rawTodoId)
+	if err != nil {
+		WriteErrorResponse(w, http.StatusBadRequest, err)
+		return
+	}
+
+	var todo data.Todo
+
+	// if action is 'save' we need to update and return the
+	// updated todo
+	if action == "save" {
+		err := r.ParseForm()
+		if err != nil {
+			WriteErrorResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		userId := r.PostFormValue("userId")
+		name := r.PostFormValue("name")
+		strActive := r.PostFormValue("active")
+
+		if userId == "" || name == "" || strActive == "" {
+			WriteErrorResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		active, err := strconv.ParseBool(strActive)
+		if err != nil {
+			WriteErrorResponse(w, http.StatusBadRequest, err)
+		}
+
+		tmpTodo := data.Todo{
+			Id:          todoId,
+			Name:        name,
+			Description: "",
+			Active:      active,
+			UserId:      userId,
+		}
+
+		todo, err = data.UpdateTodo(data.DB, tmpTodo)
+	} else {
+		todo, err = data.GetSingleTodoById(data.DB, todoId)
+	}
+	if err != nil {
+		WriteErrorResponse(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	// depending on action get edit or display template
+	var tmpl *template.Template
+	var tErr error
+	tmplName := ""
+
+	// for both show (no action) and 'save' we want
+	// to return the display template
+	if action == "edit" {
+		tmpl, tErr = GetApiTemplates("editTodo.html")
+		tmplName = "editTodoItem"
+	} else {
+		tmpl, tErr = GetApiTemplates("todo.html")
+		tmplName = "todoItem"
+	}
+	if tErr != nil {
+		WriteErrorResponse(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	tmpl.ExecuteTemplate(w, tmplName, todo)
 }

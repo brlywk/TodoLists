@@ -16,19 +16,19 @@ var (
 )
 
 // Queries a single Todo by ID
-func GetSingleTodoByUserId(db *sql.DB, id int, userId string) (Todo, error) {
-	if userId == "" {
-		return Todo{}, fmt.Errorf("UserId cannot be empty.")
-	}
+func GetSingleTodoById(db *sql.DB, id int) (Todo, error) {
+	// if userId == "" {
+	// 	return Todo{}, fmt.Errorf("UserId cannot be empty.")
+	// }
 
-	stmt, err := db.Prepare("SELECT * FROM todos WHERE id = $1 AND userId = $2")
+	stmt, err := db.Prepare("SELECT * FROM todos WHERE id = ?")
 	if err != nil {
 		log.Printf("\tGetSingleTodoById\tPrepare Statement\t%s", err)
 		return Todo{}, err
 	}
 	defer stmt.Close()
 
-	err = stmt.QueryRow(id, userId).Scan(&id, &name, &description, &active, &userId)
+	err = stmt.QueryRow(id).Scan(&id, &name, &description, &active, &userId)
 	if err != nil {
 		log.Printf("\tGetSingleTodoById\tQueryRow\t%s", err)
 		return Todo{}, err

@@ -34,13 +34,17 @@ func main() {
 	mux.Handle("/public/", http.StripPrefix("/public/", fs))
 
 	// api handlers
+	// GET
 	mux.HandleFunc("/api/todos", api.GetApiTodos)
+	mux.HandleFunc("/api/todo", api.GetTodoById)
+	// POST
 	mux.HandleFunc("/api/create", api.PostTodo)
-	mux.HandleFunc("/api/toggle", api.PutToggleTodo)
-	mux.HandleFunc("/api/edit", api.GetTodoEditForm)
-	mux.HandleFunc("/api/saveEdit", api.PutEditTodo)
-	mux.HandleFunc("/api/delete", api.DeleteTodo)
+	// PUT
 	mux.HandleFunc("/api/changeUserId", api.GetChangeUserId)
+	mux.HandleFunc("/api/toggle", api.PutToggleTodo)
+	mux.HandleFunc("/api/saveEdit", api.PutEditTodo)
+	// DELETE
+	mux.HandleFunc("/api/delete", api.DeleteTodo)
 
 	// serve root files which basically is only the index.html
 	mux.HandleFunc("/", server.GetRoot)

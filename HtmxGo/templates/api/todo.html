@@ -1,7 +1,7 @@
 {{ define "todoItem" }}
 <article class="todo-item">
   <button
-    hx-put="/api/toggle?userId={{- .UserId -}}&id={{- .Id -}}&name={{- .Name -}}"
+    hx-put="/api/toggle?id={{- .Id -}}"
     hx-swap="outerHTML"
     hx-target="closest article"
   >
@@ -37,7 +37,7 @@
     {{- .Name -}}
   </div>
   <button
-    hx-get="/api/edit?userId={{- .UserId -}}&id={{- .Id -}}"
+    hx-get="/api/todo?id={{- .Id -}}&action=edit"
     hx-swap="outerHTML"
     hx-target="closest article"
   >

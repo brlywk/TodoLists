@@ -19,13 +19,13 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 
 	todoId, err := strconv.Atoi(rawTodoId)
 	if err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, "ID cannot be converted to Integer")
+		WriteErrorResponse(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	_, err = data.DeleteTodoById(data.DB, todoId, userId)
 	if err != nil {
-		WriteErrorResponse(w, http.StatusInternalServerError, "Error deleting selected Todo")
+		WriteErrorResponse(w, http.StatusInternalServerError, err)
 		return
 	}
 

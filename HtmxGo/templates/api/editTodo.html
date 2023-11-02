@@ -1,0 +1,28 @@
+{{ define "editTodoItem" }}
+<form
+  hx-put="/api/todo?id={{- .Id -}}&action=save"
+  hx-swap="outerHTML"
+  class="todo-item"
+>
+  <input
+    type="text"
+    name="name"
+    class="form__input"
+    value="{{- .Name -}}"
+    autofocus
+    required
+  />
+  <button>Save</button>
+  <button
+    class="button"
+    hx-get="/api/todo?id={{- .Id -}}"
+    hx-swap="outerHTML"
+    hx-target="closest form"
+  >
+    Cancel
+  </button>
+  <input type="hidden" name="id" value="{{- .Id -}}" />
+  <input type="hidden" name="userId" value="{{- .UserId -}}" />
+  <input type="hidden" name="active" value="{{- .Active -}}" />
+</form>
+{{ end }}
