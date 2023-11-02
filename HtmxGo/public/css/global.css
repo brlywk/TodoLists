@@ -129,6 +129,16 @@ body {
   color: var(--ctp-text);
 }
 
+a {
+  color: var(--ctp-lavender);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -220,6 +230,7 @@ body {
   display: flex;
   gap: 1rem;
   align-items: center;
+  cursor: default;
 }
 
 .todo-item__title {
