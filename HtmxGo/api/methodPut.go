@@ -3,7 +3,6 @@ package api
 import (
 	"brlywk/HtmxGo/data"
 	"brlywk/HtmxGo/utils"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -36,9 +35,3 @@ func PutToggleTodo(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "todoItem", updatedTodo)
 }
 
-// Finished an Edit and saves changes
-func PutEditTodo(w http.ResponseWriter, r *http.Request) {
-	defer utils.Measure(r.URL.Path, r.Method)()
-
-	log.Printf("PutEditTodo called with %v", r.URL.RawQuery)
-}

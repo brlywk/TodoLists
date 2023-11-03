@@ -6,59 +6,49 @@ import (
 	"log"
 )
 
-// Don't know if this works, but let's try it this way...
-var (
-	id          int
-	name        string
-	description string
-	active      bool
-	userId      string
-)
-
 // Queries a single Todo by ID
 func GetSingleTodoById(db *sql.DB, id int) (Todo, error) {
-	// if userId == "" {
-	// 	return Todo{}, fmt.Errorf("UserId cannot be empty.")
-	// }
+	var (
+		tId     int
+		tName   string
+		tDesc   string
+		tActive bool
+		tUserId string
+	)
 
-	stmt, err := db.Prepare("SELECT * FROM todos WHERE id = ?")
-	if err != nil {
-		log.Printf("\tGetSingleTodoById\tPrepare Statement\t%s", err)
-		return Todo{}, err
-	}
-	defer stmt.Close()
-
-	err = stmt.QueryRow(id).Scan(&id, &name, &description, &active, &userId)
+	err := db.QueryRow("SELECT * FROM todos WHERE id = ?", id).Scan(&tId, &tName, &tDesc, &tActive, &tUserId)
 	if err != nil {
 		log.Printf("\tGetSingleTodoById\tQueryRow\t%s", err)
 		return Todo{}, err
 	}
 
-	newTodo := Todo{
-		Id:          id,
-		Name:        name,
-		Description: description,
-		Active:      active,
-		UserId:      userId,
+	tmpTodo := Todo{
+		Id:          tId,
+		Name:        tName,
+		Description: tDesc,
+		Active:      tActive,
+		UserId:      tUserId,
 	}
 
-	return newTodo, nil
+	return tmpTodo, nil
 }
 
 // Return a list of all todos for a user, or an empty array & error
 func GetAllTodosForUser(db *sql.DB, userId string) ([]Todo, error) {
+
+	var (
+		tId     int
+		tName   string
+		tDesc   string
+		tActive bool
+		tUserId string
+	)
+
 	if userId == "" {
 		return []Todo{}, fmt.Errorf("UserId cannot be empty.")
 	}
 
-	stmt, err := db.Prepare("SELECT * FROM todos WHERE userId = $1")
-	if err != nil {
-		log.Printf("\tGetAllTodosForUser\tPrepare Statement\t%s", err)
-		return []Todo{}, err
-	}
-	defer stmt.Close()
-
-	rows, err := stmt.Query(userId)
+	rows, err := db.Query("SELECT * FROM todos WHERE userId = ?", userId)
 	if err != nil {
 		log.Printf("\tGetAllTodosForUser\tReceiving Rows\t%s", err)
 		return []Todo{}, err
@@ -69,18 +59,18 @@ func GetAllTodosForUser(db *sql.DB, userId string) ([]Todo, error) {
 	allTodos := []Todo{}
 
 	for rows.Next() {
-		err := rows.Scan(&id, &name, &description, &active, &userId)
+		err := rows.Scan(&tId, &tName, &tDesc, &tActive, &tUserId)
 		if err != nil {
 			log.Printf("\tGetAllTodosForUser\tSingle Row\t%s", err)
 			continue
 		}
 
 		tmpTodo := Todo{
-			Id:          id,
-			Name:        name,
-			Description: description,
-			Active:      active,
-			UserId:      userId,
+			Id:          tId,
+			Name:        tName,
+			Description: tDesc,
+			Active:      tActive,
+			UserId:      tUserId,
 		}
 
 		allTodos = append(allTodos, tmpTodo)

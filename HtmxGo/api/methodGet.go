@@ -2,7 +2,6 @@ package api
 
 import (
 	"html/template"
-	"log"
 	"strconv"
 
 	"net/http"
@@ -90,13 +89,10 @@ func GetChangeUserId(w http.ResponseWriter, r *http.Request) {
 // Return single todo item
 // If action = present is in query send form, otherwise rendered todo
 func GetTodoById(w http.ResponseWriter, r *http.Request) {
-
 	defer utils.Measure(r.URL.Path, r.Method)()
 
 	rawTodoId := r.URL.Query().Get("id")
 	action := r.URL.Query().Get("action")
-
-	log.Printf("ID: %v, Action: %v", rawTodoId, action)
 
 	todoId, err := strconv.Atoi(rawTodoId)
 	if err != nil {

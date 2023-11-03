@@ -19,31 +19,31 @@ func UpdateTodo(db *sql.DB, todo Todo) (Todo, error) {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.Exec("UPDATE todos SET name = ? WHERE id = ?", todo.Name, id)
+	_, err = tx.Exec("UPDATE todos SET name = ? WHERE id = ?", todo.Name, todo.Id)
 	if err != nil {
-		return fail(err, "Error toggling active state for Todo with id "+strconv.Itoa(id))
+		return fail(err, "Error toggling active state for Todo with id "+strconv.Itoa(todo.Id))
 	}
 
 	var (
-		tId         int
-		name        string
-		description string
-		active      bool
-		userId      string
+		tId     int
+		tName   string
+		tDesc   string
+		tActive bool
+		tUserId string
 	)
 
 	row := tx.QueryRow("SELECT * FROM todos WHERE id = ?", todo.Id)
-	err = row.Scan(&tId, &name, &description, &active, &userId)
+	err = row.Scan(&tId, &tName, &tDesc, &tActive, &tUserId)
 	if err != nil {
-		return fail(err, "Error while searching Todo with id "+strconv.Itoa(id))
+		return fail(err, "Error while searching Todo with id "+strconv.Itoa(tId))
 	}
 
 	tmpTodo := Todo{
 		Id:          tId,
-		Name:        name,
-		Description: description,
-		Active:      active,
-		UserId:      userId,
+		Name:        tName,
+		Description: tDesc,
+		Active:      tActive,
+		UserId:      tUserId,
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -68,30 +68,30 @@ func UpdateToggleTodo(db *sql.DB, id int) (Todo, error) {
 	defer tx.Rollback()
 
 	var (
-		tId         int
-		name        string
-		description string
-		active      bool
-		userId      string
+		tId     int
+		tName   string
+		tDesc   string
+		tActive bool
+		tUserId string
 	)
 
 	row := tx.QueryRow("SELECT * FROM todos WHERE id = ?", id)
-	err = row.Scan(&tId, &name, &description, &active, &userId)
+	err = row.Scan(&tId, &tName, &tDesc, &tActive, &tUserId)
 	if err != nil {
 		return fail(err, "Error while searching Todo with id "+strconv.Itoa(id))
 	}
 
 	tmpTodo := Todo{
-		Id:          id,
-		Name:        name,
-		Description: description,
-		Active:      !active,
-		UserId:      userId,
+		Id:          tId,
+		Name:        tName,
+		Description: tDesc,
+		Active:      tActive,
+		UserId:      tUserId,
 	}
 
-	_, err = tx.Exec("UPDATE todos SET active = ? WHERE id = ?", !active, id)
+	_, err = tx.Exec("UPDATE todos SET active = ? WHERE id = ?", !tActive, tId)
 	if err != nil {
-		return fail(err, "Error toggling active state for Todo with id "+strconv.Itoa(id))
+		return fail(err, "Error toggling active state for Todo with id "+strconv.Itoa(tId))
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -104,8 +104,6 @@ func UpdateToggleTodo(db *sql.DB, id int) (Todo, error) {
 // Update all entries for an old user id with a new id
 // ... what do you mean with 'potential issues'?!
 func UpdateUserId(db *sql.DB, oldUserId string, newUserId string) ([]Todo, error) {
-	log.Printf("\tStarting DB stuff\nOld: %v\nNew: %v", oldUserId, newUserId)
-
 	// Quick way to exit out on errors
 	fail := func(err error, message string) ([]Todo, error) {
 		log.Printf("\tUpdateUserId\t%v\t%v", message, err)

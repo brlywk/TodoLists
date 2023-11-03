@@ -24,12 +24,6 @@ func GetRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: Also just for debug...
-	if strings.Contains(path, "favicon") {
-		log.Print("\tNo one likes favicons!")
-		return
-	}
-
 	// Parse all templates from our embeded FS
 	templ, err := template.ParseFS(&templates.Files, "*.html", "partials/*.html", "api/newTodoForm.html")
 	if err != nil {

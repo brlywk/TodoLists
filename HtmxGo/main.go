@@ -5,22 +5,33 @@ import (
 	"brlywk/HtmxGo/data"
 	"brlywk/HtmxGo/server"
 	"brlywk/HtmxGo/utils"
+	"os"
 
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/joho/godotenv"
+	_ "github.com/libsql/libsql-client-go/libsql"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 // Nobody really knows what this function is supposed to do...
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error reading .env file")
+	}
+
 	port := fmt.Sprintf(":%s", utils.GetEnv("PORT", "3000"))
+	dbUrl := os.Getenv("DB_URL")
+	dbToken := os.Getenv("DB_TOKEN")
+	fullDbUrl := fmt.Sprintf("%v?authToken=%v", dbUrl, dbToken)
 
 	// prepare sqlite connection
-	var err error
-	data.DB, err = sql.Open("sqlite3", "./db/todo.sqlite3")
+	// data.DB, err = sql.Open("sqlite3", "./db/todo.sqlite3")
+	data.DB, err = sql.Open("libsql", fullDbUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,7 +53,6 @@ func main() {
 	// PUT
 	mux.HandleFunc("/api/changeUserId", api.GetChangeUserId)
 	mux.HandleFunc("/api/toggle", api.PutToggleTodo)
-	mux.HandleFunc("/api/saveEdit", api.PutEditTodo)
 	// DELETE
 	mux.HandleFunc("/api/delete", api.DeleteTodo)
 

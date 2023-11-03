@@ -3,7 +3,6 @@ package api
 import (
 	"brlywk/HtmxGo/data"
 	"brlywk/HtmxGo/utils"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -32,6 +31,4 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	// Return success but empty response
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(""))
-
-	log.Printf("Delete Todo called with %v", r.URL.RawQuery)
 }
