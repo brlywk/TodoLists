@@ -1,5 +1,8 @@
 # Go temporary folder
-HtmxGo/tmp
+**/tmp
+
+# Node Modules
+**/node_modules
 
 # environment variables
 **/.env
