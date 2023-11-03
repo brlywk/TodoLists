@@ -21,10 +21,10 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error reading .env file")
+		log.Print(".env file not found, trying to read from environment...")
 	}
 
-	port := fmt.Sprintf(":%s", utils.GetEnv("PORT", "3000"))
+	port := fmt.Sprintf(":%s", utils.GetEnv("PORT", "8080"))
 	dbUrl := os.Getenv("DB_URL")
 	dbToken := os.Getenv("DB_TOKEN")
 	fullDbUrl := fmt.Sprintf("%v?authToken=%v", dbUrl, dbToken)
