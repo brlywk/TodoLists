@@ -85,7 +85,7 @@ func UpdateToggleTodo(db *sql.DB, id int) (Todo, error) {
 		Id:          tId,
 		Name:        tName,
 		Description: tDesc,
-		Active:      tActive,
+		Active:      !tActive,
 		UserId:      tUserId,
 	}
 
